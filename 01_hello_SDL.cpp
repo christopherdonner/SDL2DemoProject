@@ -126,6 +126,10 @@ int main( int argc, char* args[] )
 
 			}
 
+		
+		
+
+		}
 		GPU_Clear(window);
 		auto currentPair = current[index];
 		size_t position = currentPair.second + currentPair.first * nbCol;
@@ -142,7 +146,22 @@ int main( int argc, char* args[] )
 			if (index >= current.size())
 				index = 0;
 		}
+
+		auto t2 = Clock::now();
+
+		elapsedNano = (double)(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+
+		if (elapsedNano > 0) {
+			double diff = ((1000000000.f / 60.f) - elapsedNano) / 1000000.f;
+
+			if (diff > 0) {
+				SDL_Delay((Uint32)diff);
+			}
 		}
+
+		auto t3 = Clock::now();
+
+		timeElapsed = (double)(std::chrono::duration_cast<std::chrono::nanoseconds>(t3 - t1).count()) / 1000000.f;
 	}
 
 
