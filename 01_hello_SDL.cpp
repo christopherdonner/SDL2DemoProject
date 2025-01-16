@@ -19,7 +19,7 @@ int main( int argc, char* args[] )
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-	GPU_Target* window = GPU_InitRenderer(GPU_RENDERER_OPENGL_3, 200, 200, GPU_DEFAULT_INIT_FLAGS);
+	GPU_Target* window = GPU_InitRenderer(GPU_RENDERER_OPENGL_3, SCREEN_WIDTH, SCREEN_HEIGHT, GPU_DEFAULT_INIT_FLAGS);
 	GPU_Image* hero = GPU_LoadImage("adventurer-sheet.png");
 
 	std::vector<GPU_Rect> rects;
@@ -126,14 +126,12 @@ int main( int argc, char* args[] )
 
 			}
 
-		
-		
-
 		}
+
 		GPU_Clear(window);
 		auto currentPair = current[index];
 		size_t position = currentPair.second + currentPair.first * nbCol;
-		GPU_BlitTransformX(hero, &rects[position], window, 75, 75, 0, 0, 0, 1, 1);
+		GPU_BlitTransformX(hero, &rects[position], window, 200, 200, 0, 0, 0, 1, 1);
 		GPU_Flip(window);
 
 		timeBuffer = timeBuffer + timeElapsed;

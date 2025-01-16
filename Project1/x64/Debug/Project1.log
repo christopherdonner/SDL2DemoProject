@@ -1,0 +1,7 @@
+﻿  01_hello_SDL.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\ucrt\corecrt_math_defines.h(28,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file '../../../../Documents/code/SDL2DemoProject/01_hello_SDL.cpp')
+      C:\SDL2\SDL2-2.30.11\include\SDL_stdinc.h(623,9):
+      see previous definition of 'M_PI'
+  
+  Project1.vcxproj -> C:\Users\cdonner\source\repos\Project1\x64\Debug\Project1.exe
