@@ -76,5 +76,10 @@ int main(int argc, char* args[])
 		}
 	}
 
+	GPU_FreeImage(player);
+	GPU_FreeTarget(window);
+	GPU_Quit();
+	SDL_Quit();
+	
 	return 0;
 }
