@@ -1,42 +1,46 @@
-/*This source code copyrighted by Lazy Foo' Productions 2004-2024
-and may not be redistributed without written permission.*/
-
-//Using SDL and standard IO
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_gpu.h>
+#include <iostream>
 #include <stdio.h>
 #include <math.h>
 #include <vector>
 #include <chrono>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_gpu.h>
 
-using std::vector;
-using std::pair;
+using namespace std;
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 320,
-		  SCREEN_HEIGHT = 240;
-
-int main( int argc, char* args[] )
+int main(int argc, char* args[])
 {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+	SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS);
 
-	GPU_Target* window = GPU_InitRenderer(GPU_RENDERER_OPENGL_3, SCREEN_WIDTH, SCREEN_HEIGHT, GPU_DEFAULT_INIT_FLAGS);
-	GPU_Image* hero = GPU_LoadImage("adventurer-sheet.png");
+	GPU_Target* window = GPU_InitRenderer(GPU_RENDERER_OPENGL_3, 320, 240, GPU_DEFAULT_INIT_FLAGS);
+	GPU_Image* player = GPU_LoadImage("advenurer-sheet.png");
 
 	vector<GPU_Rect> rects;
-	size_t nbRow = 11;
-	size_t nbCol = 7;
-	size_t widthSpr = 50;
-	size_t heightSpr = 37;
+	size_t nbRow = 11,
+			nbCol = 7,
+		widthSpr = 50,
+		heightSpr = 37;
 
-	for (size_t i = 0; i < nbRow; i++) {
-		for (size_t j = 0; j < nbCol; j++) {
+	//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "hello world", "Successful", NULL);
+
+	//for (size_t i = 0; i < nbRow; i++) 
+	//{
+	//	for (size_t j = 0; j < nbCol; j++) 
+	//	{
+	//		rects.push_back(GPU_Rect{ (float)(j * widthSpr), (float)(i * heightSpr), (float)widthSpr, (float)heightSpr });
+	//	}
+	//}
+
+	for (size_t i = 0; i < nbRow; i++)
+	{
+		for (size_t j = 0; j < nbCol; j++)
+		{
 			rects.push_back(GPU_Rect{ (float)(j * widthSpr), (float)(i * heightSpr), (float)widthSpr, (float)heightSpr });
 		}
 	}
 
-	vector<pair<size_t, size_t>> idle1{ {0, 0}, {0, 1}, {0, 2}, {0, 3} };
+	vector<pair<size_t, size_t>> idle1{ {0,0}, {0,1},{0,2},{0,3} };
 	vector<pair<size_t, size_t>> crouch{ {0, 4}, {0, 5}, {0, 6}, {1, 0} };
 	vector<pair<size_t, size_t>> run{ {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6} };
 	vector<pair<size_t, size_t>> jump{ {2, 0}, {2, 1}, {2, 2}, {2, 3} };
@@ -56,22 +60,25 @@ int main( int argc, char* args[] )
 	vector<pair<size_t, size_t>> current = idle1;
 	size_t index = 0;
 
-	double maxDuration = 150;
-	double timeBuffer = 0;
-	double timeElapsed = 0;
+	double maxDuration = 150,
+		timeBuffer = 0,
+		timeElapsed = 0;
 	SDL_Event event;
 
 	bool done = 0;
 
-
-	while (!done) {
-		typedef std::chrono::high_resolution_clock Clock;
-
+	while (!done) 
+	{
+		typedef chrono::high_resolution_clock Clock;
 		double elapsedNano = 0;
 		auto t1 = Clock::now();
-		while (SDL_PollEvent(&event)) {
+
+		while (SDL_PollEvent(&event)) 
+		{
 			if (event.type == SDL_QUIT)
+			{
 				done = 1;
+			}
 			else if (event.type == SDL_KEYDOWN) {
 				if (event.key.keysym.sym == SDLK_ESCAPE)
 					done = 1;
@@ -125,35 +132,35 @@ int main( int argc, char* args[] )
 					current = jump;
 				}
 				index = 0;
-
 			}
-
 		}
 
 		GPU_Clear(window);
 		auto currentPair = current[index];
 		size_t position = currentPair.second + currentPair.first * nbCol;
-		GPU_BlitTransformX(hero, &rects[position], window, 120, 120, 0, 0, 0, 1, 1);
+		GPU_BlitTransformX(player, &rects[position], window, 200, 200, 0, 0, 0, 1, 1);
 		GPU_Flip(window);
 
-		timeBuffer = timeBuffer + timeElapsed;
+		timeBuffer += timeElapsed;
 
-		// update the animation
-		if (timeBuffer > maxDuration) {
+		if (timeBuffer > maxDuration)
+		{
 			timeBuffer = 0;
 			index++;
 
 			if (index >= current.size())
+			{
 				index = 0;
+			}
 		}
 
 		auto t2 = Clock::now();
 
-		elapsedNano = (double)(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+		elapsedNano = (double)(chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count());
 
-		if (elapsedNano > 0) {
-			double diff = ((1000000000.f / 60.f) - elapsedNano) / 1000000.f;
-
+		if(elapsedNano > 0)
+		{
+			double diff = ((1000000000.f / 60.f) - elapsedNano)/100000.f;
 			if (diff > 0) {
 				SDL_Delay((Uint32)diff);
 			}
@@ -161,12 +168,10 @@ int main( int argc, char* args[] )
 
 		auto t3 = Clock::now();
 
-		timeElapsed = (double)(std::chrono::duration_cast<std::chrono::nanoseconds>(t3 - t1).count()) / 1000000.f;
+		timeElapsed = (double)(chrono::duration_cast<chrono::nanoseconds>(t3 - t1).count()) / 100000.f;
 	}
-
-
-
-	GPU_FreeImage(hero);
+		
+	GPU_FreeImage(player);
 	GPU_FreeTarget(window);
 	GPU_Quit();
 	SDL_Quit();
